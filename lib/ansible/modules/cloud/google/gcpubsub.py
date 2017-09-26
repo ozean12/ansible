@@ -264,7 +264,7 @@ def main():
     mod_params['subscription'] = module.params.get('subscription')
 
     creds, params = get_google_cloud_credentials(module)
-    pubsub_client = pubsub.Client(project=params['project_id'], credentials=creds, use_gax=False)
+    pubsub_client = pubsub.Client(project=params['project_id'], credentials=creds)
     pubsub_client.user_agent = CLOUD_CLIENT_USER_AGENT
 
     changed = False
