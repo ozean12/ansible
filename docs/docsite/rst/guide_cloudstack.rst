@@ -134,7 +134,7 @@ Environment Variables
 `````````````````````
 .. versionadded:: 2.3
 
-Since Ansible 2.3 it is possible to use environment variables for domain (``CLOUDSTACK_DOMAIN``), account (``CLOUDSTACK_ACCOUNT``), project (``CLOUDSTACK_PROJECT``), VPC (``CLOUDSTACK_VPC``) and zone (``CLOUDSTACK_ZONE``). This simplifies the tasks by not repeating the arguments for every tasks.
+Since Ansible 2.3 it is possible to use environment variables for domain (``CLOUDSTACK_DOMAIN``), account (``CLOUDSTACK_ACCOUNT``), project (``CLOUDSTACK_PROJECT``), VPC (``CLOUDSTACK_VPC``), and zone (``CLOUDSTACK_ZONE``). This simplifies the tasks by not repeating the arguments for every tasks.
 
 Below you see an example how it can be used in combination with Ansible's block feature:
 
@@ -165,7 +165,7 @@ Below you see an example how it can be used in combination with Ansible's block 
 
 .. Note:: You are still able overwrite the environment variables using the module arguments, e.g. ``zone: sf-2``
 
-.. Note:: Unlike ``CLOUDSTACK_REGION`` these additional environment variables are ingored in the CLI ``cs``.
+.. Note:: Unlike ``CLOUDSTACK_REGION`` these additional environment variables are ignored in the CLI ``cs``.
 
 Use Cases
 `````````
@@ -197,7 +197,7 @@ This is how our inventory looks like:
 
 As you can see, the public IPs for our web servers and jumphost has been assigned as variable ``public_ip`` directly in the inventory.
 
-The configure the jumphost, web servers and database servers, we use ``group_vars``. The ``group_vars`` directory contains 4 files for configuration of the groups: cloud-vm, jumphost, webserver and db-server. The cloud-vm is there for specifying the defaults of our cloud infrastructure.
+To configure the jumphost, web servers, and database servers, we use ``group_vars``. The ``group_vars`` directory contains 4 files for configuration of the groups: cloud-vm, jumphost, webserver, and db-server. The cloud-vm is there for specifying the defaults of our cloud infrastructure.
 
 .. code-block:: yaml
 
@@ -262,9 +262,9 @@ Now to the fun part. We create a playbook to create our infrastructure we call i
           cs_staticnat: vm="{{ inventory_hostname_short }}" ip_address="{{ public_ip }}"
           when: public_ip is defined
 
-In the above play we defined 3 tasks and use the group ``cloud-vm`` as target to handle all VMs in the cloud but instead SSH to these VMs, we use ``connetion=local`` to execute the API calls locally from our workstation.
+In the above play we defined 3 tasks and used the group ``cloud-vm`` as target to handle all VMs in the cloud but instead SSH to these VMs, we use ``connection=local`` to execute the API calls locally from our workstation.
 
-In the first task, we ensure we have a running VM created with the Debian template. If the VM is already created but stopped, it would just start it. If you like to change the offering on an existing VM, you must add ``force: yes`` to the task, which would stop the VM, change the offering and start the VM again.
+In the first task, we ensure we have a running VM created with the Debian template. If the VM is already created but stopped, it would just start it. If you like to change the offering on an existing VM, you must add ``force: yes`` to the task, which would stop the VM, change the offering, and start the VM again.
 
 In the second task we ensure the ports are opened if we give a public IP to the VM.
 
@@ -364,12 +364,12 @@ The playbook looks like the following:
       - name: show VM IP
         debug: msg="VM {{ inventory_hostname }} {{ vm.default_ip }}"
 
-      - name: assing IP to the inventory
+      - name: assign IP to the inventory
         set_fact: ansible_ssh_host={{ vm.default_ip }}
 
       - name: waiting for SSH to come up
         wait_for: port=22 host={{ vm.default_ip }} delay=5
 
-In the first play we setup the security groups, in the second play the VMs will created be assigned to these groups. Further you see, that we assign the public IP returned from the modules to the host inventory. This is needed as we do not know the IPs we will get in advance. In a next step you would configure the DNS servers with these IPs for accassing the VMs with their DNS name.
+In the first play we setup the security groups, in the second play the VMs will created be assigned to these groups. Further you see, that we assign the public IP returned from the modules to the host inventory. This is needed as we do not know the IPs we will get in advance. In a next step you would configure the DNS servers with these IPs for accessing the VMs with their DNS name.
 
 In the last task we wait for SSH to be accessible, so any later play would be able to access the VM by SSH without failure.
