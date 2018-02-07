@@ -1,6 +1,85 @@
 Ansible Changes By Release
 ==========================
 
+<a id="2.4.3"></a>
+
+## 2.4.3 "Dancing Days" - 2018-01-31
+
+### Bugfixes
+* Fix `pamd` rule args regexp to match file paths (https://github.com/ansible/ansible/pull/33432)
+* Check if SELinux policy exists before setting (https://github.com/ansible/ansible/pull/31834)
+* Set locale to `C` in `letsencrypt` module to fix date parsing errors (https://github.com/ansible/ansible/pull/31339)
+* Fix include in loop when stategy=free
+  (https://github.com/ansible/ansible/pull/33094)
+* Fix save parameter in asa_config (https://github.com/ansible/ansible/pull/32761)
+* Fix --vault-id support in ansible-pull (https://github.com/ansible/ansible/pull/33629)
+* In nxos_interface_ospf, fail nicely if loopback is used with passive_interface:
+  (https://github.com/ansible/ansible/pull/33252)
+* Fix quote filter when given an integer to quote (https://github.com/ansible/ansible/issues/33272)
+* nxos_vrf_interface fix when validating the interface (https://github.com/ansible/ansible/issues/33227)
+* Fix for win_copy when sourcing files from an SMBv1 share
+  (https://github.com/ansible/ansible/pull/33576)
+* correctly report callback plugin file
+* restrict revaulting to vault cli
+  https://github.com/ansible/ansible/pull/33656
+* Fix python3 tracebacks in letsencrypt module (https://github.com/ansible/ansible/pull/32734)
+* Fix ansible_*_interpreter variables to be templated prior to being used:
+  https://github.com/ansible/ansible/pull/33698
+* Fix setting of environment in a task that uses a loop:
+  https://github.com/ansible/ansible/issues/32685
+* Fix fetch on Windows failing to fetch files or particular block size
+  (https://github.com/ansible/ansible/pull/33697)
+* preserve certain fields during no log. https://github.com/ansible/ansible/pull/33637
+* fix issue with order of declaration of sections in ini inventory https://github.com/ansible/ansible/pull/33781
+* Fix win_iis_webapppool to correctly stop a apppool
+  (https://github.com/ansible/ansible/pull/33777)
+* Fix CloudEngine host failed (https://github.com/ansible/ansible/pull/27876)
+* Fix ios_config save issue (https://github.com/ansible/ansible/pull/33791)
+* Handle vault filenames with nonascii chars when displaying messages (https://github.com/ansible/ansible/pull/33926)
+* Fix win_iis_webapppool to not return passwords
+  (https://github.com/ansible/ansible/pull/33931)
+* Fix extended file attributes detection and changing:
+  (https://github.com/ansible/ansible/pull/18731)
+* correctly ensure 'ungrouped' membership rules (https://github.com/ansible/ansible/pull/33878)
+* made warnings less noisy when empty/no inventory is supplied (https://github.com/ansible/ansible/pull/32806)
+* Fixes a failure which prevents to create servers in module cloudscale_server
+* Fix win_firewall_rule "Specified cast is invalid" error when modifying a rule with all of Domain/Public/Private profiles set (https://github.com/ansible/ansible/pull/34383)
+* Fix case for multilib when installing from a file in the yum module
+  (https://github.com/ansible/ansible/pull/32236)
+* Fix WinRM parsing/escaping of IPv6 addresses (https://github.com/ansible/ansible/pull/34072)
+* Fix win_package to detect MSI regardless of the extension case
+  (https://github.com/ansible/ansible/issues/34465)
+* Updated win_mapped_drive docs to clarify what it is used for
+  (https://github.com/ansible/ansible/pull/34478)
+* Fix file related modules run in check_mode when the file being operated on does not exist
+  (https://github.com/ansible/ansible/pull/33967)
+* Make eos_vlan idempotent
+  (https://github.com/ansible/ansible/pull/34443)
+* Fix win_iis_website to properly check attributes before setting
+  (https://github.com/ansible/ansible/pull/34501)
+* Fixed the removal date for ios_config save and force parameters
+  (https://github.com/ansible/ansible/pull/33885)
+* cloudstack: fix timeout from ini config file being ignored
+  https://github.com/ansible/ansible/pull/34854
+* fixes memory usage issues with many blocks/includes
+  https://github.com/ansible/ansible/issues/31673
+  https://github.com/ansible/ansible/pull/34461
+* Fixes maximum recursion depth exceeded with include_role
+  https://github.com/ansible/ansible/issues/23609
+* Fix to win_dns_client module to take ordering of DNS servers to resolve into account:
+  https://github.com/ansible/ansible/pull/34656
+* Fix for the nxos_banner module where some nxos images nest the output inside of an additional dict:
+  https://github.com/ansible/ansible/pull/34695
+* Fix failure message "got multiple values for keyword argument id" in the
+  azure_rm_securitygroup module (caused by changes to the azure python API):
+  https://github.com/ansible/ansible/pull/34810
+* Bump Azure storage client minimum to 1.5.0 to fix deserialization issues. This will break Azure Stack
+  until it receives storage API version 2017-10-01 or changes are made to support multiple versions.
+  (https://github.com/ansible/ansible/pull/34442)
+* Flush stdin when passing the become password.  Fixes some cases of timeout on
+  Python 3 with the ssh connection plugin: https://github.com/ansible/ansible/pull/35049
+
+
 <a id="2.4.2"></a>
 
 ## 2.4.2 "Dancing Days" - 2017-11-29

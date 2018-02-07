@@ -72,6 +72,7 @@ AZURE_COMMON_REQUIRED_IF = [
 
 ANSIBLE_USER_AGENT = 'Ansible/{0}'.format(ANSIBLE_VERSION)
 CLOUDSHELL_USER_AGENT_KEY = 'AZURE_HTTP_USER_AGENT'
+VSCODEEXT_USER_AGENT_KEY = 'VSCODEEXT_USER_AGENT'
 
 CIDR_PATTERN = re.compile("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1"
                           "[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))")
@@ -140,17 +141,17 @@ def azure_id_to_dict(id):
 AZURE_PKG_VERSIONS = {
     StorageManagementClient.__name__: {
         'package_name': 'storage',
-        'expected_version': '1.0.0',
+        'expected_version': '1.5.0',
         'installed_version': storage_client_version
     },
     ComputeManagementClient.__name__: {
         'package_name': 'compute',
-        'expected_version': '1.0.0',
+        'expected_version': '2.0.0',
         'installed_version': compute_client_version
     },
     NetworkManagementClient.__name__: {
         'package_name': 'network',
-        'expected_version': '1.0.0',
+        'expected_version': '1.3.0',
         'installed_version': network_client_version
     },
     ResourceManagementClient.__name__: {
@@ -208,7 +209,7 @@ class AzureRMModuleBase(object):
                       "- {0}".format(HAS_MSRESTAZURE_EXC))
 
         if not HAS_AZURE:
-            self.fail("Do you have azure>={1} installed? Try `pip install 'azure>={1}' --upgrade`"
+            self.fail("Do you have azure>={1} installed? Try `pip install ansible[azure] --upgrade`"
                       "- {0}".format(HAS_AZURE_EXC, AZURE_MIN_RELEASE))
 
         self._cloud_environment = None
@@ -294,8 +295,7 @@ class AzureRMModuleBase(object):
             expected_version = package_version.get('expected_version')
             if Version(client_version) < Version(expected_version):
                 self.fail("Installed {0} client version is {1}. The supported version is {2}. Try "
-                          "`pip install azure>={3} --upgrade`".format(client_name, client_version, expected_version,
-                                                                      AZURE_MIN_RELEASE))
+                          "`pip install ansible[azure]`".format(client_name, client_version, expected_version))
 
     def exec_module(self, **kwargs):
         self.fail("Error: {0} failed to implement exec_module method.".format(self.__class__.__name__))
@@ -704,6 +704,9 @@ class AzureRMModuleBase(object):
         # Add user agent when running from Cloud Shell
         if CLOUDSHELL_USER_AGENT_KEY in os.environ:
             client.config.add_user_agent(os.environ[CLOUDSHELL_USER_AGENT_KEY])
+        # Add user agent when running from VSCode extension
+        if VSCODEEXT_USER_AGENT_KEY in os.environ:
+            client.config.add_user_agent(os.environ[VSCODEEXT_USER_AGENT_KEY])
 
         return client
 
@@ -713,7 +716,7 @@ class AzureRMModuleBase(object):
         if not self._storage_client:
             self._storage_client = self.get_mgmt_svc_client(StorageManagementClient,
                                                             base_url=self._cloud_environment.endpoints.resource_manager,
-                                                            api_version='2017-06-01')
+                                                            api_version='2017-10-01')
         return self._storage_client
 
     @property

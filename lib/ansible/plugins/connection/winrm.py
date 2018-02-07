@@ -70,6 +70,13 @@ try:
 except ImportError as e:
     HAS_XMLTODICT = False
 
+# used to try and parse the hostname and detect if IPv6 is being used
+try:
+    import ipaddress
+    HAS_IPADDRESS = True
+except ImportError:
+    HAS_IPADRESS = False
+
 try:
     from __main__ import display
 except ImportError:
@@ -203,7 +210,18 @@ class Connection(ConnectionBase):
         '''
         display.vvv("ESTABLISH WINRM CONNECTION FOR USER: %s on PORT %s TO %s" %
                     (self._winrm_user, self._winrm_port, self._winrm_host), host=self._winrm_host)
-        netloc = '%s:%d' % (self._winrm_host, self._winrm_port)
+
+        winrm_host = self._winrm_host
+        if HAS_IPADDRESS:
+            display.vvvv("checking if winrm_host %s is an IPv6 address" % winrm_host)
+            try:
+                ipaddress.IPv6Address(winrm_host)
+            except ipaddress.AddressValueError:
+                pass
+            else:
+                winrm_host = "[%s]" % winrm_host
+
+        netloc = '%s:%d' % (winrm_host, self._winrm_port)
         endpoint = urlunsplit((self._winrm_scheme, netloc, self._winrm_path, '', ''))
         errors = []
         for transport in self._winrm_transport:
@@ -505,23 +523,29 @@ class Connection(ConnectionBase):
             while True:
                 try:
                     script = '''
-                        If (Test-Path -PathType Leaf "%(path)s")
+                        $path = "%(path)s"
+                        If (Test-Path -Path $path -PathType Leaf)
                         {
-                            $stream = New-Object IO.FileStream("%(path)s", [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [IO.FileShare]::ReadWrite);
-                            $stream.Seek(%(offset)d, [System.IO.SeekOrigin]::Begin) | Out-Null;
-                            $buffer = New-Object Byte[] %(buffer_size)d;
-                            $bytesRead = $stream.Read($buffer, 0, %(buffer_size)d);
-                            $bytes = $buffer[0..($bytesRead-1)];
-                            [System.Convert]::ToBase64String($bytes);
-                            $stream.Close() | Out-Null;
+                            $buffer_size = %(buffer_size)d
+                            $offset = %(offset)d
+
+                            $stream = New-Object -TypeName IO.FileStream($path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite)
+                            $stream.Seek($offset, [System.IO.SeekOrigin]::Begin) > $null
+                            $buffer = New-Object -TypeName byte[] $buffer_size
+                            $bytes_read = $stream.Read($buffer, 0, $buffer_size)
+                            if ($bytes_read -gt 0) {
+                                $bytes = $buffer[0..($bytes_read - 1)]
+                                [System.Convert]::ToBase64String($bytes)
+                            }
+                            $stream.Close() > $null
                         }
-                        ElseIf (Test-Path -PathType Container "%(path)s")
+                        ElseIf (Test-Path -Path $path -PathType Container)
                         {
                             Write-Host "[DIR]";
                         }
                         Else
                         {
-                            Write-Error "%(path)s does not exist";
+                            Write-Error "$path does not exist";
                             Exit 1;
                         }
                     ''' % dict(buffer_size=buffer_size, path=self._shell._escape(in_path), offset=offset)
