@@ -122,7 +122,7 @@ options:
         without first checking if already configured.
       - Note this argument should be considered deprecated.  To achieve
         the equivalent, set the C(match=none) which is idempotent.  This argument
-        will be removed in Ansible 2.7.
+        will be removed in Ansible 2.6.
     required: false
     default: false
     type: bool
@@ -410,7 +410,7 @@ def main():
         save=dict(default=False, type='bool', removed_in_version='2.8'),
 
         # force argument deprecated in ans2.2
-        force=dict(default=False, type='bool', removed_in_version='2.7')
+        force=dict(default=False, type='bool', removed_in_version='2.6')
     )
 
     argument_spec.update(ios_argument_spec)
@@ -531,9 +531,16 @@ def main():
             base_config = NetworkConfig(indent=1, contents=contents, ignore_lines=diff_ignore_lines)
 
             if running_config.sha1 != base_config.sha1:
+                if module.params['diff_against'] == 'intended':
+                    before = running_config
+                    after = base_config
+                elif module.params['diff_against'] in ('startup', 'running'):
+                    before = base_config
+                    after = running_config
+
                 result.update({
                     'changed': True,
-                    'diff': {'before': str(base_config), 'after': str(running_config)}
+                    'diff': {'before': str(before), 'after': str(after)}
                 })
 
     module.exit_json(**result)

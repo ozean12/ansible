@@ -75,7 +75,7 @@ try:
     import ipaddress
     HAS_IPADDRESS = True
 except ImportError:
-    HAS_IPADRESS = False
+    HAS_IPADDRESS = False
 
 try:
     from __main__ import display
@@ -196,8 +196,9 @@ class Connection(ConnectionBase):
         display.vvvvv("calling kinit for principal %s" % principal)
         p = subprocess.Popen(kinit_cmdline, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=krbenv)
 
-        # TODO: unicode/py3
-        stdout, stderr = p.communicate(password + b'\n')
+        b_password = to_bytes(password, encoding='utf-8',
+                              errors='surrogate_or_strict')
+        stdout, stderr = p.communicate(b_password + b'\n')
 
         if p.returncode != 0:
             raise AnsibleConnectionFailure("Kerberos auth failure: %s" % stderr.strip())
@@ -295,7 +296,7 @@ class Connection(ConnectionBase):
 
             except Exception as ex:
                 from traceback import format_exc
-                display.warning("FATAL ERROR DURING FILE TRANSFER: %s" % format_exc(ex))
+                display.warning("FATAL ERROR DURING FILE TRANSFER: %s" % to_text(ex))
                 stdin_push_failed = True
 
             if stdin_push_failed:

@@ -35,7 +35,6 @@ if _powershell_version:
     _common_args = ['PowerShell', '-Version', _powershell_version] + _common_args[1:]
 
 exec_wrapper = br'''
-#Requires -Version 3.0
 begin {
     $DebugPreference = "Continue"
     $ErrorActionPreference = "Stop"
@@ -113,7 +112,10 @@ Function Run($payload) {
     $ps.AddStatement().AddScript("Function Write-Host(`$msg){ Write-Output `$msg }") | Out-Null
 
     ForEach ($env_kv in $payload.environment.GetEnumerator()) {
-        $escaped_env_set = "`$env:{0} = '{1}'" -f $env_kv.Key,$env_kv.Value.Replace("'","''")
+        # need to escape ' in both the key and value
+        $env_key = $env_kv.Key.ToString().Replace("'", "''")
+        $env_value = $env_kv.Value.ToString().Replace("'", "''")
+        $escaped_env_set = "[System.Environment]::SetEnvironmentVariable('{0}', '{1}')" -f $env_key, $env_value
         $ps.AddStatement().AddScript($escaped_env_set) | Out-Null
     }
 
@@ -566,7 +568,6 @@ namespace Ansible.Shell
 "@
 
 $exec_wrapper = {
-#Requires -Version 3.0
 $DebugPreference = "Continue"
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2
@@ -835,7 +836,6 @@ $ErrorActionPreference = "Stop"
 # return asyncresult to controller
 
 $exec_wrapper = {
-#Requires -Version 3.0
 $DebugPreference = "Continue"
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2

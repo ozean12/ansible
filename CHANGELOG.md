@@ -1,6 +1,141 @@
 Ansible Changes By Release
 ==========================
 
+<a id="2.4.4"></a>
+
+## 2.4.4 "Dancing Days" - 2018-04-04
+
+### Bugfixes
+* Fix python 3 dictionary runtime error in ios_confg and eos_config
+  (https://github.com/ansible/ansible/issues/36717)
+* Fix `win_script` to work with large arguments and removed uneeded function
+  that produces errors and was not needed
+  (https://github.com/ansible/ansible/pull/33855)
+* Fix timeout when using piped ssh transfer with become
+  https://github.com/ansible/ansible/issues/34523
+* Fix win_scheduled_task docs to correctly reflect what is required and when
+  (https://github.com/ansible/ansible/issues/35072)
+* Updated copy test to create recursive symlink during the test and not have it
+  located in the git repo
+  (https://github.com/ansible/ansible/pull/35073)
+* Fix Digital Ocean tags data type due to backend API changes no longer
+  acceping integers
+  (https://github.com/ansible/ansible/pull/33486)
+* Fix for nxos_vxlan_vtep_vni issues: https://github.com/ansible/ansible/pull/34946
+* Fixes for nxos_bgp: https://github.com/ansible/ansible/pull/34590
+* Enable nxapi nxos_banner test: https://github.com/ansible/ansible/pull/35033
+* fix vxlan idempotent issue in nxos_vxlan_vtep: https://github.com/ansible/ansible/pull/34750
+* Fix win_dns_client to allow setting dynamic IP from static IP
+  (https://github.com/ansible/ansible/pull/35149)
+* Fix azure_rm_subnet absent idempotency issues
+  (https://github.com/ansible/ansible/pull/35037)
+* Fix azure_rm_virtualmachine creating VM with vnet in another resource group
+  (https://github.com/ansible/ansible/pull/35038)
+* Fix nxos terminal plugin regex to support certain commands
+  (https://github.com/ansible/ansible/pull/35186)
+* Fix network os_config modules backward diff
+  (https://github.com/ansible/ansible/pull/35332)
+* Fix nxos_snmp_user removing encryption from user on subsequent runs of the task
+  (https://github.com/ansible/ansible/pull/35433)
+* Fix traceback in winrm module when the ipaddress module is not installed
+  https://github.com/ansible/ansible/pull/35723/files
+* Fix bug in `lineinfile` where the line would not be inserted when using `insertbefore` or `insertafter` if the pattern occured anywhere in the file. (https://github.com/ansible/ansible/issues/28721)
+* Fix connection local getting overridden by network_cli for transport nxapi,eapi for platform agnostic modules
+  (https://github.com/ansible/ansible/pull/35590)
+* Include dest i nthe results from file copy:
+  https://github.com/ansible/ansible/pull/35702/
+* Fix eos_config second-level indent idempotece
+  https://github.com/ansible/ansible/pull/35588
+* Fix the removed_in_version to 2.6 ios_config force option
+  https://github.com/ansible/ansible/pull/35853
+* Fix memory ballooning caused as a result of task caching changes
+  https://github.com/ansible/ansible/pull/35921
+* Fix nxos_igmp_interface for diff nxos versions
+  (https://github.com/ansible/ansible/pull/35959)
+* Fix recursion error with many flat includes
+  (https://github.com/ansible/ansible/pull/36075)
+* Fix win_uri to work with `creates` and `removed` option
+  (https://github.com/ansible/ansible/pull/36016)
+* Fix the oom_killer parameter to docker_container not being honored
+  https://github.com/ansible/ansible/pull/34130
+* Fix docker_service so a build is not triggered every time
+  https://github.com/ansible/ansible/issues/36145
+* Be more tolerant about spaces when gathering virtual facts (https://github.com/ansible/ansible/pull/36042)
+* validate add_host name parameter (https://github.com/ansible/ansible/pull/36055)
+* spelling fixes (https://github.com/ansible/ansible/pull/36007)
+* avoid needles vault prompt on ansible-console (https://github.com/ansible/ansible/pull/36244)
+* fix callback function signatures (https://github.com/ansible/ansible/pull/35664)
+* Clarify error message from convert_bool()
+  https://github.com/ansible/ansible/pull/36041
+* Fix EC2 C5 instance_type fact to be kvm:
+  https://github.com/ansible/ansible/pull/35063
+* Fix templating of loop_control properties:
+  https://github.com/ansible/ansible/pull/36124
+* Fix dependency in the deb package on Ubuntu-12.04:
+  https://github.com/ansible/ansible/pull/36407
+* Fix WinRM Python 3 encoding when getting Kerberos ticket
+  (https://github.com/ansible/ansible/issues/36255)
+* Always show custom prompt in pause module
+  (https://github.com/ansible/ansible/issues/36057)
+* Improve performance and recursion depth in include_role
+  (https://github.com/ansible/ansible/pull/36470)
+* Fix using ansible_*_interpreter on Python3 with non-new-style modules
+  (old-style ansible python modules, modules written in another language, etc)
+  https://github.com/ansible/ansible/pull/36541
+* Fix vyos_config IndexError in sanitize_config
+  (https://github.com/ansible/ansible/issues/36351)
+* Fix vyos_l3_interface multiple address assignment to interfaces
+  (https://github.com/ansible/ansible/pull/36721)
+* Protect from inventory plugins using verify incorrectly
+  https://github.com/ansible/ansible/pull/36591
+* loop control templating
+  https://github.com/ansible/ansible/pull/36124
+* fix debug output
+  https://github.com/ansible/ansible/pull/36307
+* Fix credentials for Ansible Tower modules to work with v1 and v2 of the API
+  (https://github.com/ansible/ansible/pull/36587)
+  (https://github.com/ansible/ansible/pull/36662)
+* Python3 fixes:
+  * Fix for the znode zookeeper module: https://github.com/ansible/ansible/pull/36999
+  * Fix for the maven_artifact module: https://github.com/ansible/ansible/pull/37035
+* Add changes to get docker_container, docker_common, and docker_network
+  working with Docker SDK 3.x: https://github.com/ansible/ansible/pull/36973
+* Ensure we install ansible-config and ansible-inventory with `pip install -e`
+  (https://github.com/ansible/ansible/pull/37151)
+* Fix for unarchive when users use the --strip-components extra_opt to tar
+  causing ansible to set permissions on the wrong directory.
+  https://github.com/ansible/ansible/pull/37048
+* Fix powershell plugin to handle special chars in environment keys as well as
+  int and bool values
+  (https://github.com/ansible/ansible/pull/37215)
+* Fix error messages to not be inappropriately templated:
+  https://github.com/ansible/ansible/pull/37329
+* Fix Python 3 error in the openssl_certificate module:
+  https://github.com/ansible/ansible/pull/35143
+* Fix traceback when creating or stopping ovirt vms
+  (https://github.com/ansible/ansible/pull/37249)
+* Connection error messages may contain characters that jinja2 would
+  interpret as a template.  Wrap the error string so this doesn't happen
+  (https://github.com/ansible/ansible/pull/37329)
+* Fix python3 compatibility bug in wait_for_connection
+  (https://github.com/ansible/ansible/pull/37646)
+* Fix output of the interfaces_file module:
+  https://github.com/ansible/ansible/pull/37818/files
+* Fix haproxy traceback on Python 3 https://github.com/ansible/ansible/pull/35176
+* Fix the csvfile lookup plugin for python3 tracebacks: https://github.com/ansible/ansible/pull/37665
+* Fix ec2 user_data parameter to properly convert to base64 on python3 (https://github.com/ansible/ansible/pull/37628)
+* ansible-pull - fixed a bug checking for changes when we've pulled from the
+  git repository on python3 https://github.com/ansible/ansible/issues/36962
+* Fix digital_ocean module unique_name parameter for a python3 bug:
+  https://github.com/ansible/ansible/issues/37114
+* Fix a Python3 bug in the vagrant dynamic inventory script: https://github.com/ansible/ansible/pull/37631
+* Fix python3 bug in the jira module: https://github.com/ansible/ansible/pull/33862
+* Fix consul module's state=absent: https://github.com/ansible/ansible/issues/34628
+* fix required args for nxos_snapshot: https://github.com/ansible/ansible/pull/37232
+* Properly check that nxos_snapshot parameters that are required in certain circumstances are present:
+  https://github.com/ansible/ansible/pull/37232
+
+
 <a id="2.4.3"></a>
 
 ## 2.4.3 "Dancing Days" - 2018-01-31
